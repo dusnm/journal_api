@@ -19,7 +19,10 @@
         "robmorgan/phinx": "^0.11.4",
         "swiftmailer/swiftmailer": "^6.2",
         "firebase/php-jwt": "^5.1",
-        "rakit/validation": "^1.2"
+        "rakit/validation": "^1.2",
+        "monolog/monolog": "^2.0",
+        "nesbot/carbon": "^2.31",
+        "mongodb/mongodb": "^1.6"
     },
     "autoload": {
         "psr-4": {

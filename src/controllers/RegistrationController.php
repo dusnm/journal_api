@@ -3,23 +3,39 @@
 namespace App\Controllers;
 
 use App\DTO\RegistrationDTO;
+use function App\Helpers\env;
 use App\Interfaces\HttpStatusCodes;
 use App\Models\User;
+use App\Services\JwtService;
+use App\Services\MailerService;
 use App\Services\RegistrationService;
 use Illuminate\Database\QueryException;
+use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\Validator;
+use Swift_Message as Message;
 
 class RegistrationController extends ApiController
 {
     private Validator $validator;
     private RegistrationService $registrationService;
+    private MailerService $mailerService;
+    private JwtService $jwtService;
+    private Logger $log;
 
-    public function __construct(Validator $validator, RegistrationService $registrationService)
-    {
+    public function __construct(
+        Validator $validator,
+        RegistrationService $registrationService,
+        MailerService $mailerService,
+        JwtService $jwtService,
+        Logger $log
+    ) {
         $this->validator = $validator;
         $this->registrationService = $registrationService;
+        $this->mailerService = $mailerService;
+        $this->jwtService = $jwtService;
+        $this->log = $log;
     }
 
     public function register(Request $request, Response $response): Response
@@ -55,10 +71,26 @@ class RegistrationController extends ApiController
          */
         if (!($userOrError instanceof User)) {
             if ($userOrError instanceof QueryException) {
+                $this->log->error($userOrError->getMessage());
+
                 return $this->response($response, ['error' => 'Server error. Please, try again later.'], HttpStatusCodes::INTERNAL_SERVER_ERROR);
             }
 
             return $this->response($response, $userOrError, HttpStatusCodes::UNPROCESSABLE_ENTITY);
+        }
+
+        $verificationToken = $this->jwtService->sign(['email' => $registrationDTO->email]);
+
+        $verificationMessage = (new Message(env('APP_NAME', 'Journal API').' verification email.'))
+            ->setFrom(env('MAILER_USERNAME'))
+            ->setTo($registrationDTO->email)
+            ->setBody('<a href='.env('APP_URL').'/api/verify?token='.$verificationToken.'>Click here to verify your account.</a>', 'text/html')
+        ;
+
+        if (0 === $this->mailerService->send($verificationMessage)) {
+            $this->log->error('Failed to send an email to: '.$registrationDTO->email);
+        } else {
+            $this->log->info('Sent a verification email to: '.$registrationDTO->email);
         }
 
         return $this->response($response, $userOrError, HttpStatusCodes::CREATED);
