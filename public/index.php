@@ -15,6 +15,7 @@ $container = require_once __DIR__.'/../src/configuration/dependency_container.ph
 $app = Bridge::create($container);
 
 require_once __DIR__.'/../src/routes/home.php';
+require_once __DIR__.'/../src/routes/register.php';
 
 $app->addRoutingMiddleware();
 $app->addBodyParsingMiddleware();

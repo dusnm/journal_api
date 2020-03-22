@@ -14,6 +14,10 @@ class User extends Model
         'password',
     ];
 
+    protected $hidden = [
+        'password',
+    ];
+
     public function journals(): HasMany
     {
         return $this->hasMany(Journal::class, 'user_id', 'id');
