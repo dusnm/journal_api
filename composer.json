@@ -1,0 +1,29 @@
+{
+    "name": "dusnm/journal-api",
+    "description": "An API for a journaling app.",
+    "authors": [
+        {
+            "name": "Dušan Mitrović",
+            "email": "dusan@dusanmitrovic.xyz",
+            "homepage": "https://dusanmitrovic.xyz",
+            "role": "Backend Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4",
+        "slim/slim": "4.*",
+        "slim/psr7": "^1.0",
+        "php-di/slim-bridge": "^3.0",
+        "illuminate/database": "^7.2",
+        "vlucas/phpdotenv": "^4.1",
+        "robmorgan/phinx": "^0.11.4",
+        "swiftmailer/swiftmailer": "^6.2",
+        "firebase/php-jwt": "^5.1",
+        "rakit/validation": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
