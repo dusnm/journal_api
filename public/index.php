@@ -20,6 +20,7 @@ require_once __DIR__.'/../src/routes/home.php';
 require_once __DIR__.'/../src/routes/register.php';
 require_once __DIR__.'/../src/routes/verify.php';
 require_once __DIR__.'/../src/routes/login.php';
+require_once __DIR__.'/../src/routes/journal.php';
 
 $customErrorHandler = new CustomErrorHandler($app->getCallableResolver(), $app->getResponseFactory(), $container->get(Logger::class));
 $customErrorHandler->forceContentType('application/json');
