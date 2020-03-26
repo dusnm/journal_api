@@ -11,6 +11,7 @@ use Firebase\JWT\SignatureInvalidException;
 use Monolog\Logger;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use UnexpectedValueException;
 
 class TokenDecodingMiddleware
 {
@@ -27,24 +28,24 @@ class TokenDecodingMiddleware
 
     public function __invoke(Request $request, RequestHandler $handler)
     {
-        $requestParamsToken = $request->getQueryParams()['token'];
+        $requestParams = $request->getQueryParams();
         $authorizationHeader = $request->getHeader('Authorization');
 
-        if (!isset($requestParamsToken) && empty($authorizationHeader)) {
+        if (!isset($requestParams['token']) && empty($authorizationHeader)) {
             $request = $request->withAttribute('error', ErrorMessages::UNAUTHORIZED);
 
             return $handler->handle($request);
         }
 
-        if (isset($requestParamsToken) && !empty($authorizationHeader)) {
+        if (isset($requestParams['token']) && !empty($authorizationHeader)) {
             $request = $request->withAttribute('error', ErrorMessages::DUAL_AUTHORIZATION_TYPE);
 
             return $handler->handle($request);
         }
 
         try {
-            if (isset($requestParamsToken)) {
-                $decodedData = $this->jwtService->decode($requestParamsToken);
+            if (isset($requestParams['token'])) {
+                $decodedData = $this->jwtService->decode($requestParams['token']);
 
                 $request = $request->withAttribute('decodedData', $decodedData);
 
@@ -68,7 +69,7 @@ class TokenDecodingMiddleware
 
                 return $handler->handle($request);
             }
-        } catch (ExpiredException | BeforeValidException | SignatureInvalidException $e) {
+        } catch (ExpiredException | BeforeValidException | SignatureInvalidException | UnexpectedValueException $e) {
             $this->log->warning($e->getMessage(), [
                 'route' => $request->getUri()->getPath(),
             ]);
