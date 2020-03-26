@@ -4,7 +4,6 @@ namespace App\Middleware;
 
 use App\Interfaces\ErrorMessages;
 use App\Services\JwtService;
-use App\Traits\ResponseTrait;
 use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
@@ -15,8 +14,6 @@ use UnexpectedValueException;
 
 class TokenDecodingMiddleware
 {
-    use ResponseTrait;
-
     private JwtService $jwtService;
     private Logger $log;
 
