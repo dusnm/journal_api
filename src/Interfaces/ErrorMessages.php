@@ -9,4 +9,5 @@ interface ErrorMessages
     public const UNAUTHORIZED = 'You are not authorized to perform this action.';
     public const DUAL_AUTHORIZATION_TYPE = 'You can only use one authorization type at a time.';
     public const INVALID_AUTHORIZATION_TYPE = 'Invalid authorization type.';
+    public const LOGIN_FAILED = 'Check your email or password.';
 }

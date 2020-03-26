@@ -18,6 +18,7 @@ $app = Bridge::create($container);
 require_once __DIR__.'/../src/routes/home.php';
 require_once __DIR__.'/../src/routes/register.php';
 require_once __DIR__.'/../src/routes/verify.php';
+require_once __DIR__.'/../src/routes/login.php';
 
 $app->addRoutingMiddleware();
 $app->addBodyParsingMiddleware();
