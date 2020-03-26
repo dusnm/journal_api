@@ -1,6 +1,7 @@
 <?php
 
 use function App\Helpers\env;
+use App\Middleware\CorsMiddleware;
 use DI\Bridge\Slim\Bridge;
 use Dotenv\Dotenv;
 
@@ -21,5 +22,6 @@ require_once __DIR__.'/../src/routes/verify.php';
 $app->addRoutingMiddleware();
 $app->addBodyParsingMiddleware();
 $app->addErrorMiddleware(env('APP_DEBUG_MODE', false), false, false);
+$app->add(CorsMiddleware::class);
 
 $app->run();
