@@ -8,6 +8,8 @@ class EmailVerificationService
 {
     /**
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     *
+     * Verify the user's account
      */
     public function verify(string $email): bool
     {
