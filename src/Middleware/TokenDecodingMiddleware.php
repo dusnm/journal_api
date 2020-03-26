@@ -69,7 +69,9 @@ class TokenDecodingMiddleware
                 return $handler->handle($request);
             }
         } catch (ExpiredException | BeforeValidException | SignatureInvalidException $e) {
-            $this->log->warning($e->getMessage());
+            $this->log->warning($e->getMessage(), [
+                'route' => $request->getUri()->getPath(),
+            ]);
 
             $request = $request->withAttribute('error', ErrorMessages::UNAUTHORIZED);
 

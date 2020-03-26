@@ -30,9 +30,7 @@ $containerBuilder->addDefinitions([
     MongoDBClient::class => create(MongoDBClient::class)->constructor(env('MONGODB_CONNECTION_STRING')),
     Logger::class => static function (ContainerInterface $container) {
         $logger = new Logger(env('MONOLOG_LOGGER_NAME', 'journal-api'));
-        $logger->pushHandler(new MongoDBHandler($container->get(MongoDBClient::class), env('MONGODB_DATABASE', 'logs'), env('MONGODB_LOGS_ERROR', 'error'), Logger::ERROR));
-        $logger->pushHandler(new MongoDBHandler($container->get(MongoDBClient::class), env('MONGODB_DATABASE', 'logs'), env('MONGODB_LOGS_WARNING', 'warning'), Logger::WARNING));
-        $logger->pushHandler(new MongoDBHandler($container->get(MongoDBClient::class), env('MONGODB_DATABASE', 'logs'), env('MONGODB_LOGS_INFO', 'info'), Logger::INFO));
+        $logger->pushHandler(new MongoDBHandler($container->get(MongoDBClient::class), env('MONGODB_DATABASE', 'logs'), env('MONGODB_LOGS_COLLECTION', 'logs')));
 
         return $logger;
     },

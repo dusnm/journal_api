@@ -72,7 +72,9 @@ class RegistrationController extends ApiController
          */
         if (!($userOrError instanceof User)) {
             if ($userOrError instanceof QueryException) {
-                $this->log->error($userOrError->getMessage());
+                $this->log->error($userOrError->getMessage(), [
+                    'route' => $request->getUri()->getPath(),
+                ]);
 
                 return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
             }
@@ -89,9 +91,13 @@ class RegistrationController extends ApiController
         ;
 
         if (0 === $this->mailerService->send($verificationMessage)) {
-            $this->log->error('Failed to send an email to: '.$registrationDTO->email);
+            $this->log->error('Failed to send an email to: '.$registrationDTO->email, [
+                'route' => $request->getUri()->getPath(),
+            ]);
         } else {
-            $this->log->info('Sent a verification email to: '.$registrationDTO->email);
+            $this->log->info('Sent a verification email to: '.$registrationDTO->email, [
+                'route' => $request->getUri()->getPath(),
+            ]);
         }
 
         return $this->response($response, $userOrError, HttpStatusCodes::CREATED);

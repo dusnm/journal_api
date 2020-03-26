@@ -37,7 +37,9 @@ class EmailVerificationController extends ApiController
             $decodedData = $request->getAttribute('decodedData');
 
             if (!$this->emailVerificationService->verify($decodedData->email)) {
-                $this->log->error('Unknown error while verifying the user.');
+                $this->log->error('Unknown error while verifying the user.', [
+                    'route' => $request->getUri()->getPath(),
+                ]);
 
                 return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
             }
@@ -46,7 +48,9 @@ class EmailVerificationController extends ApiController
         } catch (ModelNotFoundException $e) {
             return $this->response($response, ['error' => ErrorMessages::NOT_FOUND], HttpStatusCodes::NOT_FOUND);
         } catch (Exception $e) {
-            $this->log->error($e->getMessage());
+            $this->log->error($e->getMessage(), [
+                'route' => $request->getUri()->getPath(),
+            ]);
 
             return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
         }
