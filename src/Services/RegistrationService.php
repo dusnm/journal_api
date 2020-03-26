@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTO\RegistrationDTO;
 use App\Interfaces\DatabaseErrors;
+use App\Interfaces\ErrorMessages;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 
@@ -22,7 +23,7 @@ class RegistrationService
             switch ($e->getCode()) {
                 case DatabaseErrors::ERR_DUPLICATE_ENTRY:
                     return [
-                        'email' => 'Email taken.',
+                        'error' => ErrorMessages::DUPLICATE_EMAIL,
                     ];
                 default:
                     return $e;

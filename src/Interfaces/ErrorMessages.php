@@ -10,4 +10,5 @@ interface ErrorMessages
     public const DUAL_AUTHORIZATION_TYPE = 'You can only use one authorization type at a time.';
     public const INVALID_AUTHORIZATION_TYPE = 'Invalid authorization type.';
     public const LOGIN_FAILED = 'Check your email or password.';
+    public const DUPLICATE_EMAIL = 'Email taken.';
 }
