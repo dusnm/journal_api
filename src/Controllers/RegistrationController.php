@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\DTO\RegistrationDTO;
 use function App\Helpers\env;
+use App\Interfaces\ErrorMessages;
 use App\Interfaces\HttpStatusCodes;
 use App\Models\User;
 use App\Services\JwtService;
@@ -73,13 +74,13 @@ class RegistrationController extends ApiController
             if ($userOrError instanceof QueryException) {
                 $this->log->error($userOrError->getMessage());
 
-                return $this->response($response, ['error' => 'Server error. Please, try again later.'], HttpStatusCodes::INTERNAL_SERVER_ERROR);
+                return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
             }
 
             return $this->response($response, $userOrError, HttpStatusCodes::UNPROCESSABLE_ENTITY);
         }
 
-        $verificationToken = $this->jwtService->sign(['email' => $registrationDTO->email]);
+        $verificationToken = $this->jwtService->sign(['email' => $registrationDTO->email], 60 * 10);
 
         $verificationMessage = (new Message(env('APP_NAME', 'Journal API').' verification email.'))
             ->setFrom(env('MAILER_USERNAME'))

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Traits;
 
 use Psr\Http\Message\ResponseInterface as Response;
 
-abstract class ApiController
+trait ResponseTrait
 {
     protected function response(Response $response, $data, int $statusCode): Response
     {

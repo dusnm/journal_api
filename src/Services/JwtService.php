@@ -28,14 +28,14 @@ class JwtService
         }
     }
 
-    public function sign(array $payload): string
+    public function sign(array $payload, int $exp): string
     {
         return JWT::encode(
             array_merge(
                 [
                     'iss' => env('APP_URL'),
                     'iat' => time(),
-                    'exp' => time() + 60 * 60 / 2, // 30 min
+                    'exp' => time() + $exp,
                 ],
                 $payload
             ),
