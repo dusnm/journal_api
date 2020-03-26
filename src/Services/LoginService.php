@@ -22,10 +22,10 @@ class LoginService
             throw new UserNotVerifiedException();
         }
 
-        if (!password_verify($loginDTO->password, $user->makeVisible('password')->password)) {
+        if (!password_verify($loginDTO->password, $user->password)) {
             return null;
         }
 
-        return $user->makeHidden('password');
+        return $user;
     }
 }
