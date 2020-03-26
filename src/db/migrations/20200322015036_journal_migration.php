@@ -13,7 +13,10 @@ class JournalMigration extends AbstractMigration
             ->addColumn('user_id', 'integer', ['length' => 11])
             ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP', 'update' => 'CURRENT_TIMESTAMP'])
-            ->addForeignKey('user_id', 'users', 'id')
+            ->addForeignKey('user_id', 'users', 'id', [
+                'update' => 'CASCADE',
+                'delete' => 'CASCADE',
+            ])
             ->create()
         ;
     }
