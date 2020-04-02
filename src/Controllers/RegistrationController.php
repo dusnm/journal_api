@@ -54,7 +54,7 @@ class RegistrationController extends ApiController
             'firstName' => 'required|max:25',
             'lastName' => 'required|max:25',
             'email' => 'required|email|max:50',
-            'password' => 'required|min:6|max:100',
+            'password' => 'required|min:8|max:100',
         ]);
 
         if ($validation->fails()) {
@@ -74,6 +74,7 @@ class RegistrationController extends ApiController
             if ($userOrError instanceof QueryException) {
                 $this->log->error($userOrError->getMessage(), [
                     'route' => $request->getUri()->getPath(),
+                    'dto' => $registrationDTO,
                 ]);
 
                 return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
@@ -93,10 +94,12 @@ class RegistrationController extends ApiController
         if (0 === $this->mailerService->send($verificationMessage)) {
             $this->log->error('Failed to send an email to: '.$registrationDTO->email, [
                 'route' => $request->getUri()->getPath(),
+                'dto' => $registrationDTO,
             ]);
         } else {
             $this->log->info('Sent a verification email to: '.$registrationDTO->email, [
                 'route' => $request->getUri()->getPath(),
+                'dto' => $registrationDTO,
             ]);
         }
 

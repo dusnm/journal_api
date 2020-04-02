@@ -66,6 +66,7 @@ class LoginController extends ApiController
         } catch (Exception $e) {
             $this->log->error($e->getMessage(), [
                 'route' => $request->getUri()->getPath(),
+                'dto' => $loginDTO,
             ]);
 
             return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);

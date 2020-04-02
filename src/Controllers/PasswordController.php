@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\DTO\User\ResetPasswordDTO;
 use function App\Helpers\env;
 use App\Interfaces\ErrorMessages;
 use App\Interfaces\HttpStatusCodes;
@@ -82,6 +83,59 @@ class PasswordController extends ApiController
         } catch (Exception $e) {
             $this->log->error($e->getMessage(), [
                 'route' => $request->getUri()->getPath(),
+            ]);
+
+            return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function resetPassword(Request $request, Response $response): Response
+    {
+        $error = $request->getAttribute('error');
+        $decodedData = $request->getAttribute('decodedData');
+
+        if (isset($error)) {
+            return $this->response($response, ['error' => ErrorMessages::UNAUTHORIZED], HttpStatusCodes::UNAUTHORIZED);
+        }
+
+        $requestBody = $request->getParsedBody();
+
+        $resetPasswordDTO = new ResetPasswordDTO(
+            $decodedData->email,
+            htmlspecialchars(strip_tags($requestBody['password']))
+        );
+
+        $validation = $this->validator->validate((array) $resetPasswordDTO, [
+            'email' => 'required|email|max:50',
+            'password' => 'required|min:8|max:100',
+        ]);
+
+        if ($validation->fails()) {
+            return $this->response($response, $validation->errors()->firstOfAll(), HttpStatusCodes::UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            if (!$this->passwordService->resetPassword($resetPasswordDTO)) {
+                $this->log->error('An unknown error has occured.', [
+                    'route' => $request->getUri()->getPath(),
+                    'dto' => $resetPasswordDTO,
+                ]);
+
+                return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
+            }
+
+            return $this->response($response, ['success' => true], HttpStatusCodes::OK);
+        } catch (ModelNotFoundException $e) {
+            $this->log->error($e->getMessage(), [
+                'route' => $request->getUri()->getPath(),
+                'dto' => $resetPasswordDTO,
+            ]);
+
+            return $this->response($response, ['error' => ErrorMessages::UNAUTHORIZED], HttpStatusCodes::UNAUTHORIZED);
+        } catch (Exception $e) {
+            $this->log->error($e->getMessage(), [
+                'route' => $request->getUri()->getPath(),
+                'dto' => $resetPasswordDTO,
             ]);
 
             return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);

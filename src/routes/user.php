@@ -13,4 +13,5 @@ $app->group('/api/user', function (RouteCollectorProxy $group) {
     $group->post('/login', [LoginController::class, 'login']);
     $group->get('/verify', [EmailVerificationController::class, 'verify'])->add(TokenDecodingMiddleware::class);
     $group->get('/request-password-reset', [PasswordController::class, 'requestPasswordReset']);
+    $group->post('/password-reset', [PasswordController::class, 'resetPassword'])->add(TokenDecodingMiddleware::class);
 });

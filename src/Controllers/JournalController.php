@@ -53,6 +53,7 @@ class JournalController extends ApiController
         } catch (QueryException $e) {
             $this->log->error($e->getMessage(), [
                 'route' => $request->getUri()->getPath(),
+                'dto' => $readJournalDTO,
             ]);
 
             return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
@@ -77,7 +78,7 @@ class JournalController extends ApiController
         );
 
         $validation = $this->validator->validate((array) $createJournalDTO, [
-            'name' => 'required',
+            'name' => 'required|max:50',
             'body' => 'required',
             'userId' => 'required|numeric',
         ]);
@@ -93,6 +94,7 @@ class JournalController extends ApiController
         } catch (QueryException $e) {
             $this->log->error($e->getMessage(), [
                 'route' => $request->getUri()->getPath(),
+                'dto' => $createJournalDTO,
             ]);
 
             return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
@@ -129,6 +131,7 @@ class JournalController extends ApiController
         } catch (QueryException $e) {
             $this->log->error($e->getMessage(), [
                 'route' => $request->getUri()->getPath(),
+                'dto' => $deleteJournalDTO,
             ]);
 
             return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
