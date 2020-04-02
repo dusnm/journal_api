@@ -4,13 +4,16 @@ namespace App\Services;
 
 use App\DTO\Journal\CreateJournalDTO;
 use App\DTO\Journal\DeleteJournalDTO;
+use App\DTO\Journal\ReadByIdJournalDTO;
 use App\DTO\Journal\ReadJournalDTO;
+use App\DTO\Journal\UpdateJournalDTO;
 use App\Models\Journal;
 
 class JournalService
 {
-    public function readById()
+    public function readById(ReadByIdJournalDTO $readByIdJournalDTO)
     {
+        return Journal::query()->where([['id', '=', $readByIdJournalDTO->id], ['user_id', '=', $readByIdJournalDTO->userId]])->get();
     }
 
     public function read(ReadJournalDTO $readJournalDTO)
@@ -27,8 +30,18 @@ class JournalService
         ]);
     }
 
-    public function update()
+    public function update(UpdateJournalDTO $updateJournalDTO): int
     {
+        return Journal::query()
+            ->where([
+                ['id', '=', $updateJournalDTO->id],
+                ['user_id', '=', $updateJournalDTO->userId],
+            ])
+            ->update([
+                'name' => $updateJournalDTO->name,
+                'body' => $updateJournalDTO->body,
+            ])
+        ;
     }
 
     public function delete(DeleteJournalDTO $deleteJournalDTO)

@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\DTO\RegistrationDTO;
+use App\DTO\User\RegistrationDTO;
 use function App\Helpers\env;
 use App\Interfaces\ErrorMessages;
 use App\Interfaces\HttpStatusCodes;
@@ -87,7 +87,7 @@ class RegistrationController extends ApiController
         $verificationMessage = (new Message(env('APP_NAME', 'Journal API').' verification email.'))
             ->setFrom(env('MAILER_USERNAME'))
             ->setTo($registrationDTO->email)
-            ->setBody('<a href='.env('APP_URL').'/api/verify?token='.$verificationToken.'>Click here to verify your account.</a>', 'text/html')
+            ->setBody('<a href='.env('APP_URL').'/api/user/verify?token='.$verificationToken.'>Click here to verify your account.</a>', 'text/html')
         ;
 
         if (0 === $this->mailerService->send($verificationMessage)) {

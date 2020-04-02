@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\DTO\LoginDTO;
+use App\DTO\User\LoginDTO;
 use App\Exceptions\UserNotVerifiedException;
 use App\Models\User;
 

@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\DTO\LoginDTO;
+use App\DTO\User\LoginDTO;
 use App\Exceptions\UserNotVerifiedException;
 use App\Interfaces\ErrorMessages;
 use App\Interfaces\HttpStatusCodes;

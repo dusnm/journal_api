@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\DTO\RegistrationDTO;
+use App\DTO\User\RegistrationDTO;
 use App\Interfaces\DatabaseErrors;
 use App\Interfaces\ErrorMessages;
 use App\Models\User;

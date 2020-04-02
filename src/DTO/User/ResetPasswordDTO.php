@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTO;
+namespace App\DTO\User;
 
-class LoginDTO
+class ResetPasswordDTO
 {
     public string $email;
     public string $password;
