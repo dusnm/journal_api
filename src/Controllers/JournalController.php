@@ -36,10 +36,18 @@ class JournalController extends ApiController
             return $this->response($response, ['error' => $error], HttpStatusCodes::UNAUTHORIZED);
         }
 
-        $readJournalDTO = new ReadJournalDTO((int) $decodedData->id);
+        $requestQueryParams = $request->getQueryParams();
+
+        $readJournalDTO = new ReadJournalDTO(
+            (int) $decodedData->id,
+            (int) htmlspecialchars(strip_tags($requestQueryParams['page'])),
+            (int) htmlspecialchars(strip_tags($requestQueryParams['rowsPerPage']))
+        );
 
         $validation = $this->validator->validate((array) $readJournalDTO, [
             'userId' => 'required|numeric',
+            'page' => 'required|numeric',
+            'rowsPerPage' => 'required|numeric',
         ]);
 
         if ($validation->fails()) {

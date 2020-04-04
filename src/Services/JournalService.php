@@ -16,9 +16,17 @@ class JournalService
         return Journal::query()->where([['id', '=', $readByIdJournalDTO->id], ['user_id', '=', $readByIdJournalDTO->userId]])->get();
     }
 
-    public function read(ReadJournalDTO $readJournalDTO)
+    public function read(ReadJournalDTO $readJournalDTO): array
     {
-        return Journal::query()->where('user_id', '=', $readJournalDTO->userId)->get();
+        return [
+            'journals' => Journal::query()
+                ->where('user_id', '=', $readJournalDTO->userId)
+                ->orderBy('created_at', 'DESC')
+                ->skip(($readJournalDTO->page - 1) * $readJournalDTO->rowsPerPage)
+                ->take($readJournalDTO->rowsPerPage)
+                ->get(),
+            'totalPages' => ceil(Journal::query()->count() / $readJournalDTO->rowsPerPage),
+        ];
     }
 
     public function create(CreateJournalDTO $createJournalDTO): Journal
