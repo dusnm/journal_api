@@ -13,7 +13,7 @@ class JournalService
 {
     public function readById(ReadByIdJournalDTO $readByIdJournalDTO)
     {
-        return Journal::query()->where([['id', '=', $readByIdJournalDTO->id], ['user_id', '=', $readByIdJournalDTO->userId]])->get();
+        return Journal::query()->where([['id', '=', $readByIdJournalDTO->id], ['user_id', '=', $readByIdJournalDTO->userId]])->firstOrFail();
     }
 
     public function read(ReadJournalDTO $readJournalDTO): array
@@ -48,15 +48,13 @@ class JournalService
             ->update([
                 'name' => $updateJournalDTO->name,
                 'body' => $updateJournalDTO->body,
-            ])
-        ;
+            ]);
     }
 
     public function delete(DeleteJournalDTO $deleteJournalDTO)
     {
         return Journal::query()
             ->where([['id', '=', $deleteJournalDTO->id], ['user_id', '=', $deleteJournalDTO->userId]])
-            ->delete()
-        ;
+            ->delete();
     }
 }
