@@ -48,13 +48,15 @@ class JournalService
             ->update([
                 'name' => $updateJournalDTO->name,
                 'body' => $updateJournalDTO->body,
-            ]);
+            ])
+        ;
     }
 
     public function delete(DeleteJournalDTO $deleteJournalDTO)
     {
         return Journal::query()
             ->where([['id', '=', $deleteJournalDTO->id], ['user_id', '=', $deleteJournalDTO->userId]])
-            ->delete();
+            ->delete()
+        ;
     }
 }

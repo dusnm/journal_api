@@ -47,7 +47,7 @@ class JournalController extends ApiController
 
         $validation = $this->validator->validate((array) $readByIdJournalDTO, [
             'id' => 'required|numeric',
-            'userId' => 'required|numeric'
+            'userId' => 'required|numeric',
         ]);
 
         if ($validation->fails()) {
@@ -61,7 +61,7 @@ class JournalController extends ApiController
         } catch (ModelNotFoundException $e) {
             $this->log->error($e->getMessage(), [
                 'route' => $request->getUri()->getPath(),
-                'dto' => $readByIdJournalDTO
+                'dto' => $readByIdJournalDTO,
             ]);
 
             return $this->response($response, ['error' => ErrorMessages::NOT_FOUND], HttpStatusCodes::NOT_FOUND);
@@ -179,7 +179,7 @@ class JournalController extends ApiController
             'name' => 'required|max:50',
             'body' => 'required',
             'userId' => 'required|numeric',
-            'id' => 'required|numeric'
+            'id' => 'required|numeric',
         ]);
 
         if ($validation->fails()) {
@@ -193,7 +193,7 @@ class JournalController extends ApiController
         } catch (QueryException | Exception $e) {
             $this->log->error($e->getMessage(), [
                 'route' => $request->getUri()->getPath(),
-                'dto' => $updateJournalDTO
+                'dto' => $updateJournalDTO,
             ]);
 
             return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
