@@ -25,7 +25,11 @@ class JournalService
                 ->skip(($readJournalDTO->page - 1) * $readJournalDTO->rowsPerPage)
                 ->take($readJournalDTO->rowsPerPage)
                 ->get(),
-            'totalPages' => ceil(Journal::query()->count() / $readJournalDTO->rowsPerPage),
+            'totalPages' => ceil(
+                Journal::query()
+                    ->where('user_id', '=', $readJournalDTO->userId)
+                    ->count() / $readJournalDTO->rowsPerPage
+            ),
         ];
     }
 
@@ -48,15 +52,13 @@ class JournalService
             ->update([
                 'name' => $updateJournalDTO->name,
                 'body' => $updateJournalDTO->body,
-            ])
-        ;
+            ]);
     }
 
     public function delete(DeleteJournalDTO $deleteJournalDTO)
     {
         return Journal::query()
             ->where([['id', '=', $deleteJournalDTO->id], ['user_id', '=', $deleteJournalDTO->userId]])
-            ->delete()
-        ;
+            ->delete();
     }
 }
