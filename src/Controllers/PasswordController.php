@@ -91,12 +91,7 @@ class PasswordController extends ApiController
 
     public function resetPassword(Request $request, Response $response): Response
     {
-        $error = $request->getAttribute('error');
         $decodedData = $request->getAttribute('decodedData');
-
-        if (isset($error)) {
-            return $this->response($response, ['error' => ErrorMessages::UNAUTHORIZED], HttpStatusCodes::UNAUTHORIZED);
-        }
 
         $requestBody = $request->getParsedBody();
 

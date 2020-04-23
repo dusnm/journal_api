@@ -3,17 +3,22 @@
 namespace App\Middleware;
 
 use App\Interfaces\ErrorMessages;
+use App\Interfaces\HttpStatusCodes;
 use App\Services\JwtService;
+use App\Traits\ResponseTrait;
 use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
 use Monolog\Logger;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Psr7\Response;
 use UnexpectedValueException;
 
 class TokenDecodingMiddleware
 {
+    use ResponseTrait;
+
     private JwtService $jwtService;
     private Logger $log;
 
@@ -28,16 +33,14 @@ class TokenDecodingMiddleware
         $requestParams = $request->getQueryParams();
         $authorizationHeader = $request->getHeader('Authorization');
 
-        if (!isset($requestParams['token']) && empty($authorizationHeader)) {
-            $request = $request->withAttribute('error', ErrorMessages::UNAUTHORIZED);
+        $errorResponse = new Response();
 
-            return $handler->handle($request);
+        if (!isset($requestParams['token']) && empty($authorizationHeader)) {
+            return $this->response($errorResponse, ['error' => ErrorMessages::UNAUTHORIZED], HttpStatusCodes::UNAUTHORIZED);
         }
 
         if (isset($requestParams['token']) && !empty($authorizationHeader)) {
-            $request = $request->withAttribute('error', ErrorMessages::DUAL_AUTHORIZATION_TYPE);
-
-            return $handler->handle($request);
+            return $this->response($errorResponse, ['error' => ErrorMessages::DUAL_AUTHORIZATION_TYPE], HttpStatusCodes::BAD_REQUEST);
         }
 
         try {
@@ -55,9 +58,7 @@ class TokenDecodingMiddleware
                 [$authorizationType, $token] = explode(' ', $authorizationString);
 
                 if ('bearer' !== strtolower($authorizationType)) {
-                    $request = $request->withAttribute('error', ErrorMessages::INVALID_AUTHORIZATION_TYPE);
-
-                    return $handler->handle($request);
+                    return $this->response($errorResponse, ['error' => ErrorMessages::INVALID_AUTHORIZATION_TYPE], HttpStatusCodes::UNAUTHORIZED);
                 }
 
                 $decodedData = $this->jwtService->decode($token);
@@ -71,9 +72,7 @@ class TokenDecodingMiddleware
                 'route' => $request->getUri()->getPath(),
             ]);
 
-            $request = $request->withAttribute('error', ErrorMessages::UNAUTHORIZED);
-
-            return $handler->handle($request);
+            return $this->response($errorResponse, ['error' => ErrorMessages::UNAUTHORIZED], HttpStatusCodes::UNAUTHORIZED);
         }
     }
 }

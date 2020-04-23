@@ -28,12 +28,6 @@ class EmailVerificationController extends ApiController
     public function verify(Request $request, Response $response): Response
     {
         try {
-            $error = $request->getAttribute('error');
-
-            if (isset($error)) {
-                return $this->response($response, ['error' => $error], HttpStatusCodes::UNAUTHORIZED);
-            }
-
             $decodedData = $request->getAttribute('decodedData');
 
             if (!$this->emailVerificationService->verify($decodedData->email)) {

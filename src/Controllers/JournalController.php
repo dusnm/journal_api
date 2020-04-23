@@ -33,12 +33,7 @@ class JournalController extends ApiController
 
     public function readById(Request $request, Response $response, $id): Response
     {
-        $error = $request->getAttribute('error');
         $decodedData = $request->getAttribute('decodedData');
-
-        if (isset($error)) {
-            return $this->response($response, ['error' => $error], HttpStatusCodes::UNAUTHORIZED);
-        }
 
         $readByIdJournalDTO = new ReadByIdJournalDTO(
             (int) htmlspecialchars(strip_tags($id)),
@@ -77,12 +72,7 @@ class JournalController extends ApiController
 
     public function read(Request $request, Response $response): Response
     {
-        $error = $request->getAttribute('error');
         $decodedData = $request->getAttribute('decodedData');
-
-        if (isset($error)) {
-            return $this->response($response, ['error' => $error], HttpStatusCodes::UNAUTHORIZED);
-        }
 
         $requestQueryParams = $request->getQueryParams();
 
@@ -118,12 +108,7 @@ class JournalController extends ApiController
 
     public function create(Request $request, Response $response): Response
     {
-        $error = $request->getAttribute('error');
         $decodedData = $request->getAttribute('decodedData');
-
-        if (isset($error)) {
-            return $this->response($response, ['error' => $error], HttpStatusCodes::UNAUTHORIZED);
-        }
 
         $requestBody = $request->getParsedBody();
 
@@ -159,12 +144,7 @@ class JournalController extends ApiController
 
     public function update(Request $request, Response $response, $id): Response
     {
-        $error = $request->getAttribute('error');
         $decodedData = $request->getAttribute('decodedData');
-
-        if (isset($error)) {
-            return $this->response($response, ['error' => $error], HttpStatusCodes::UNAUTHORIZED);
-        }
 
         $requestBody = $request->getParsedBody();
 
@@ -202,12 +182,7 @@ class JournalController extends ApiController
 
     public function delete(Request $request, Response $response, $id): Response
     {
-        $error = $request->getAttribute('error');
         $decodedData = $request->getAttribute('decodedData');
-
-        if (isset($error)) {
-            return $this->response($response, ['error' => $error], HttpStatusCodes::UNAUTHORIZED);
-        }
 
         $deleteJournalDTO = new DeleteJournalDTO(
             (int) htmlspecialchars(strip_tags($id)),
