@@ -6,5 +6,5 @@
 
 ```
 chmod +x gen_keys
-./gen_keys
+./key_gen
 ```

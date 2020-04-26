@@ -1,0 +1,54 @@
+#!/bin/env php
+
+<?php
+
+define('KEYS_DIRECTORY', __DIR__.'/keys');
+define('PRIVATE_KEY_PATH', __DIR__.'/keys/private.pem');
+define('PUBLIC_KEY_PATH', __DIR__.'/keys/public.pem');
+define('SECRET_KEY_PATH', __DIR__.'/keys/secret_key');
+define('SECRET_KEY_NONCE_PATH', __DIR__.'/keys/secret_key_nonce');
+
+function generate_key_pair(array $options): array
+{
+    $key_pair = openssl_pkey_new($options);
+    $key_pair_details = openssl_pkey_get_details($key_pair);
+
+    openssl_pkey_export($key_pair, $private_key);
+
+    return [
+        'private_key' => $private_key,
+        'public_key' => $key_pair_details['key'],
+    ];
+}
+
+function generate_secret_key_and_nonce(): array
+{
+    return [
+        'key' => random_bytes(SODIUM_CRYPTO_SECRETBOX_KEYBYTES),
+        'nonce' => random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES),
+    ];
+}
+
+if (!file_exists(KEYS_DIRECTORY)) {
+    mkdir(KEYS_DIRECTORY, 0755);
+}
+
+if (!file_exists(PRIVATE_KEY_PATH) && !file_exists(PUBLIC_KEY_PATH)) {
+    $keys = generate_key_pair([
+        'digest_alg' => 'sha256',
+        'private_key_bits' => 4096,
+        'private_key_type' => OPENSSL_KEYTYPE_RSA,
+    ]);
+
+    file_put_contents(PUBLIC_KEY_PATH, $keys['public_key']);
+    file_put_contents(PRIVATE_KEY_PATH, $keys['private_key']);
+
+    chmod(PRIVATE_KEY_PATH, 0600);
+}
+
+if (!file_exists(SECRET_KEY_PATH) && !file_exists(SECRET_KEY_NONCE_PATH)) {
+    $key_and_nonce = generate_secret_key_and_nonce();
+
+    file_put_contents(SECRET_KEY_PATH, $key_and_nonce['key']);
+    file_put_contents(SECRET_KEY_NONCE_PATH, $key_and_nonce['nonce']);
+}
