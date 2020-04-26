@@ -7,8 +7,13 @@ define('PRIVATE_KEY_PATH', __DIR__.'/keys/private.pem');
 define('PUBLIC_KEY_PATH', __DIR__.'/keys/public.pem');
 define('SECRET_KEY_PATH', __DIR__.'/keys/secret_key');
 define('SECRET_KEY_NONCE_PATH', __DIR__.'/keys/secret_key_nonce');
+define('PUBLIC_KEY_CRYPTO_DIGEST_ALGORITHM', 'sha512');
+define('PUBLIC_KEY_CRYPTO_KEY_LENGTH', 4096);
 
-function generate_key_pair(array $options): array
+/**
+ * Generates a public key cryptography key pair in string representation with the provided options.
+ */
+function generate_public_key_crypto_key_pair(array $options): array
 {
     $key_pair = openssl_pkey_new($options);
     $key_pair_details = openssl_pkey_get_details($key_pair);
@@ -16,16 +21,19 @@ function generate_key_pair(array $options): array
     openssl_pkey_export($key_pair, $private_key);
 
     return [
-        'private_key' => $private_key,
-        'public_key' => $key_pair_details['key'],
+        $private_key,
+        $key_pair_details['key'],
     ];
 }
 
+/**
+ * Generates pseudorandom bytes to be used as part of a symetric encryption/decrytpion key.
+ */
 function generate_secret_key_and_nonce(): array
 {
     return [
-        'key' => random_bytes(SODIUM_CRYPTO_SECRETBOX_KEYBYTES),
-        'nonce' => random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES),
+        random_bytes(SODIUM_CRYPTO_SECRETBOX_KEYBYTES),
+        random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES),
     ];
 }
 
@@ -34,21 +42,31 @@ if (!file_exists(KEYS_DIRECTORY)) {
 }
 
 if (!file_exists(PRIVATE_KEY_PATH) && !file_exists(PUBLIC_KEY_PATH)) {
-    $keys = generate_key_pair([
-        'digest_alg' => 'sha512',
-        'private_key_bits' => 4096,
+    /*
+     * Getting the string representation of private and public keys to be stored in a file
+     *
+     * Supported public key cryptography algorithms include:
+     * OPENSSL_KEYTYPE_RSA,
+     * OPENSSL_KEYTYPE_DSA,
+     * OPENSSL_KEYTYPE_DH,
+     * OPENSSL_KEYTYPE_EC
+     */
+    [$private_key, $public_key] = generate_public_key_crypto_key_pair([
+        'digest_alg' => PUBLIC_KEY_CRYPTO_DIGEST_ALGORITHM,
+        'private_key_bits' => PUBLIC_KEY_CRYPTO_KEY_LENGTH,
         'private_key_type' => OPENSSL_KEYTYPE_RSA,
     ]);
 
-    file_put_contents(PUBLIC_KEY_PATH, $keys['public_key']);
-    file_put_contents(PRIVATE_KEY_PATH, $keys['private_key']);
+    file_put_contents(PUBLIC_KEY_PATH, $public_key);
+    file_put_contents(PRIVATE_KEY_PATH, $private_key);
 
+    // The private key must only be accessible by the owner
     chmod(PRIVATE_KEY_PATH, 0600);
 }
 
 if (!file_exists(SECRET_KEY_PATH) && !file_exists(SECRET_KEY_NONCE_PATH)) {
-    $key_and_nonce = generate_secret_key_and_nonce();
+    [$secret_key, $secret_key_nonce] = generate_secret_key_and_nonce();
 
-    file_put_contents(SECRET_KEY_PATH, $key_and_nonce['key']);
-    file_put_contents(SECRET_KEY_NONCE_PATH, $key_and_nonce['nonce']);
+    file_put_contents(SECRET_KEY_PATH, $secret_key);
+    file_put_contents(SECRET_KEY_NONCE_PATH, $secret_key_nonce);
 }
