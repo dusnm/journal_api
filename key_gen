@@ -35,7 +35,7 @@ if (!file_exists(KEYS_DIRECTORY)) {
 
 if (!file_exists(PRIVATE_KEY_PATH) && !file_exists(PUBLIC_KEY_PATH)) {
     $keys = generate_key_pair([
-        'digest_alg' => 'sha256',
+        'digest_alg' => 'sha512',
         'private_key_bits' => 4096,
         'private_key_type' => OPENSSL_KEYTYPE_RSA,
     ]);
