@@ -21,6 +21,8 @@ If you wish to seed the database with random data for testing purposes run the f
 ```
 ./vendor/bin/phinx seed:run -s UserSeeder -s JournalSeeder
 ```
+### Logging
+Logging functionality is handled using the **MongoDB** database server. A local or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) instance is required for normal operation. Supply the connection string in the **.env** file.
 ### Running the application
 Configure your favourite web server to point to the **index.php** file found in the **public** directory, a **.htaccess** file is provided for the **Apache Web Server**. If you wish to run the built in php development server for testing purposes run:
 ```
