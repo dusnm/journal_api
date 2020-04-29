@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Interfaces\ImageUploadInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
+use function App\Helpers\randomString;
+
 class DiskImageUploadService implements ImageUploadInterface
 {
     private const UPLOAD_DIRECTORY = __DIR__.'/../../public/images/'.date('d-m-Y');
@@ -24,7 +26,7 @@ class DiskImageUploadService implements ImageUploadInterface
         }
 
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-        $basename = bin2hex(random_bytes(8));
+        $basename = randomString(15);
         $filename = sprintf('%s.%0.8s', $basename, $extension);
         $filePath = self::UPLOAD_DIRECTORY.DIRECTORY_SEPARATOR.$filename;
 
