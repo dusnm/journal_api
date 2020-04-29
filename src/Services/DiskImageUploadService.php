@@ -20,7 +20,7 @@ class DiskImageUploadService implements ImageUploadInterface
     {
         // Create a directory to store the uploaded file based on the current date
         if (!file_exists(self::UPLOAD_DIRECTORY)) {
-            mkdir(self::UPLOAD_DIRECTORY, 0775, true);
+            mkdir(self::UPLOAD_DIRECTORY, 0755, true);
         }
 
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
