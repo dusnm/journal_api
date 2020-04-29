@@ -22,4 +22,9 @@ class User extends Model
     {
         return $this->hasMany(Journal::class, 'user_id', 'id');
     }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class, 'user_id', 'id');
+    }
 }

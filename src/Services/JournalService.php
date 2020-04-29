@@ -13,7 +13,10 @@ class JournalService
 {
     public function readById(ReadByIdJournalDTO $readByIdJournalDTO)
     {
-        return Journal::query()->where([['id', '=', $readByIdJournalDTO->id], ['user_id', '=', $readByIdJournalDTO->userId]])->firstOrFail();
+        return Journal::query()->where(
+            [['id', '=', $readByIdJournalDTO->id],
+            ['user_id', '=', $readByIdJournalDTO->userId]]
+        )->firstOrFail();
     }
 
     public function read(ReadJournalDTO $readJournalDTO): array
