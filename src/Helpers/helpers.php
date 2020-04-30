@@ -12,7 +12,13 @@ namespace App\Helpers;
 */
 function env(string $value, $default = null)
 {
-    return getenv($value) ?? $default;
+    $environmentVariable = getenv($value);
+
+    if (!$environmentVariable) {
+        return $default;
+    }
+
+    return $environmentVariable;
 }
 
 /**
