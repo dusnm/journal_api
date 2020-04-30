@@ -32,7 +32,7 @@ Provided you've filled in the neccessary information in the **.env** file (an ex
 ### Database seeding
 If you wish to seed the database with random data for testing purposes run the following command:
 ```
-./vendor/bin/phinx seed:run -s UserSeeder -s JournalSeeder
+./vendor/bin/phinx seed:run -s UserSeeder -s JournalSeeder -s ImageSeeder
 ```
 
 ### Logging
