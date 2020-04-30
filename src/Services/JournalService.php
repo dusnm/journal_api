@@ -11,29 +11,36 @@ use App\Models\Journal;
 
 class JournalService
 {
+    private array $eagerLoadedRelationships = [
+        'images',
+    ];
+
     public function readById(ReadByIdJournalDTO $readByIdJournalDTO)
     {
-        return Journal::query()->where(
-            [['id', '=', $readByIdJournalDTO->id],
-            ['user_id', '=', $readByIdJournalDTO->userId]]
-        )->firstOrFail();
+        return Journal::query()
+            ->with($this->eagerLoadedRelationships)
+            ->where([
+                ['id', '=', $readByIdJournalDTO->id],
+                ['user_id', '=', $readByIdJournalDTO->userId]
+            ])->firstOrFail();
     }
 
     public function read(ReadJournalDTO $readJournalDTO): array
     {
         return [
             'journals' => Journal::query()
+                ->with($this->eagerLoadedRelationships)
                 ->where('user_id', '=', $readJournalDTO->userId)
                 ->orderBy('created_at', 'DESC')
                 ->skip(($readJournalDTO->page - 1) * $readJournalDTO->rowsPerPage)
                 ->take($readJournalDTO->rowsPerPage)
                 ->get(),
-            'totalPages' => ceil(
+            'total_pages' => ceil(
                 Journal::query()
                     ->where('user_id', '=', $readJournalDTO->userId)
                     ->count() / $readJournalDTO->rowsPerPage
             ),
-        ];
+       ];
     }
 
     public function create(CreateJournalDTO $createJournalDTO): Journal

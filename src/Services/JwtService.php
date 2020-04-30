@@ -8,7 +8,6 @@ use Firebase\JWT\JWT;
 class JwtService
 {
     private $publicKey;
-
     private $privateKey;
 
     public function __construct($publicKey, $privateKey)

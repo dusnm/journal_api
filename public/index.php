@@ -19,6 +19,7 @@ $app = Bridge::create($container);
 require_once __DIR__.'/../src/routes/home.php';
 require_once __DIR__.'/../src/routes/user.php';
 require_once __DIR__.'/../src/routes/journal.php';
+require_once __DIR__.'/../src/routes/image.php';
 
 $customErrorHandler = new CustomErrorHandler($app->getCallableResolver(), $app->getResponseFactory(), $container->get(Logger::class));
 $customErrorHandler->forceContentType('application/json');

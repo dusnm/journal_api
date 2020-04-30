@@ -23,7 +23,7 @@ class ImageUploadController extends ApiController
         $this->log = $log;
     }
 
-    public function uploadUserAvatar(Request $request, Response $response): Response
+    public function upload(Request $request, Response $response): Response
     {
         $decodedUser = $request->getAttribute('decodedData');
 
