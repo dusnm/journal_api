@@ -17,9 +17,6 @@ class ImageSeeder extends AbstractSeed
                 'url' => $faker->unique()->imageUrl(640, 480, 'cats'),
                 'user_id' => $i + 1
             ];
-        }
-
-        for ($i = 0; $i < 500; $i++) {
             $journalImages[] = [
                 'url' => $faker->unique()->imageUrl(640, 480, 'nature'),
                 'journal_id' => $i + 1
