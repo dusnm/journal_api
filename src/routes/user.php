@@ -2,6 +2,7 @@
 
 /** @var \Slim\App $app */
 use App\Controllers\EmailVerificationController;
+use App\Controllers\ImageUploadController;
 use App\Controllers\LoginController;
 use App\Controllers\PasswordController;
 use App\Controllers\RegistrationController;
@@ -14,4 +15,5 @@ $app->group('/api/user', function (RouteCollectorProxy $group) {
     $group->get('/verify', [EmailVerificationController::class, 'verify'])->add(TokenDecodingMiddleware::class);
     $group->get('/request-password-reset', [PasswordController::class, 'requestPasswordReset']);
     $group->post('/password-reset', [PasswordController::class, 'resetPassword'])->add(TokenDecodingMiddleware::class);
+    $group->post('/avatar', [ImageUploadController::class, 'uploadUserAvatar'])->add(TokenDecodingMiddleware::class);
 });

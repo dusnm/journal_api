@@ -1,10 +1,14 @@
 <?php
 
 use function App\Helpers\env;
+
+use App\Interfaces\ImageUploadInterface;
 use App\Services\JwtService;
 use App\Services\SecretKeyEncryptionService;
 use DI\ContainerBuilder;
 use function DI\create;
+use function DI\get;
+
 use Illuminate\Database\Capsule\Manager as Capsule;
 use MongoDB\Client as MongoDBClient;
 use Monolog\Handler\MongoDBHandler;
@@ -14,6 +18,7 @@ use Psr\Container\ContainerInterface;
 $containerBuilder = new ContainerBuilder();
 
 $connections = require_once __DIR__.'/../db/connections.php';
+$filesystem = require_once __DIR__.'/filesystems.php';
 
 $capsule = new Capsule();
 $capsule->addConnection($connections[env('DB_DRIVER', 'mysql')]);
@@ -54,6 +59,7 @@ $containerBuilder->addDefinitions([
 
         return new SecretKeyEncryptionService($secretKey, $secretKeyNonce);
     },
+    ImageUploadInterface::class => get($filesystem[env('FILE_SYSTEM_DRIVER', 'local')]['driver'])
 ]);
 
 return $containerBuilder->build();
