@@ -2,3 +2,4 @@ vendor/
 .vscode/
 keys/
 .env
+.php_cs.cache
