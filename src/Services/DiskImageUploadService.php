@@ -32,7 +32,7 @@ class DiskImageUploadService implements ImageUploadInterface
         $filePath = $uploadPath.DIRECTORY_SEPARATOR.$filename;
 
         $uploadedFile->moveTo($filePath);
-    
+
         return url(strstr($filePath, '/images'));
     }
 }

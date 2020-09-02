@@ -1,15 +1,12 @@
 <?php
 
 use function App\Helpers\env;
-
+use function DI\create;
+use function DI\get;
 use App\Interfaces\ImageUploadInterface;
 use App\Services\JwtService;
 use App\Services\SecretKeyEncryptionService;
 use DI\ContainerBuilder;
-use function DI\create;
-use function DI\get;
-
-use Illuminate\Database\Capsule\Manager as Capsule;
 use MongoDB\Client as MongoDBClient;
 use Monolog\Handler\MongoDBHandler;
 use Monolog\Logger;
@@ -17,13 +14,8 @@ use Psr\Container\ContainerInterface;
 
 $containerBuilder = new ContainerBuilder();
 
-$connections = require_once __DIR__.'/../db/connections.php';
-$filesystem = require_once __DIR__.'/filesystems.php';
-
-$capsule = new Capsule();
-$capsule->addConnection($connections[env('DB_DRIVER', 'mysql')]);
-$capsule->setAsGlobal();
-$capsule->bootEloquent();
+$filesystem = require __DIR__.'/filesystems.php';
+$capsule = require __DIR__.'/../db/capsule.php';
 
 $smtpTransport = new Swift_SmtpTransport(env('MAILER_HOST'), env('MAILER_PORT'), env('MAILER_ENCRYPTION'));
 $smtpTransport->setUsername(env('MAILER_USERNAME'));

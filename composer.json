@@ -29,7 +29,14 @@
             "App\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
     "require-dev": {
-        "fzaninotto/faker": "^1.9"
+        "fzaninotto/faker": "^1.9",
+        "phpunit/phpunit": "^9.3",
+        "codedungeon/phpunit-result-printer": "^0.28.0"
     }
 }
