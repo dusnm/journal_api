@@ -13,8 +13,7 @@ class UserMigration extends AbstractMigration
             ->addColumn('email', 'string', ['length' => 50])
             ->addColumn('password', 'string', ['length' => 100])
             ->addColumn('verified', 'boolean', ['default' => false])
-            ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
-            ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP', 'update' => 'CURRENT_TIMESTAMP'])
+            ->addTimestampsWithTimezone()
             ->addIndex('email', ['unique' => true])
             ->create()
         ;

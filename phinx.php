@@ -4,8 +4,7 @@ use Dotenv\Dotenv;
 
 require_once __DIR__.'/vendor/autoload.php';
 
-$dotenv = Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+(Dotenv::createImmutable(__DIR__))->load();
 
 return [
     'paths' => [
@@ -24,7 +23,12 @@ return [
             'port' => $_ENV['DB_PORT'] ?? 3306,
             'charset' => $_ENV['DB_CHARSET'] ?? 'utf8mb4',
         ],
-        'testing'=> [],
+        'testing'=> [
+            'adapter' => 'sqlite',
+            'name' => './src/db/db',
+            'suffix' => '.sqlite',
+            'memory' => false,
+        ],
         'production' => []
     ],
     'version_order' => 'creation',
