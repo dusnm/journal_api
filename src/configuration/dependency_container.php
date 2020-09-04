@@ -5,7 +5,6 @@ use function DI\create;
 use function DI\get;
 use App\Interfaces\ImageUploadInterface;
 use App\Services\JwtService;
-use App\Services\SecretKeyEncryptionService;
 use DI\ContainerBuilder;
 use MongoDB\Client as MongoDBClient;
 use Monolog\Handler\MongoDBHandler;
@@ -40,16 +39,6 @@ $containerBuilder->addDefinitions([
         }
 
         return new JwtService($publicKey, $privateKey);
-    },
-    SecretKeyEncryptionService::class => function () {
-        $secretKey = file_get_contents(env('SECRET_KEY_PATH'));
-        $secretKeyNonce = file_get_contents(env('SECRET_KEY_NONCE_PATH'));
-
-        if (false === $secretKey || false === $secretKeyNonce) {
-            throw new Error('Cannot find secret key and nonce.');
-        }
-
-        return new SecretKeyEncryptionService($secretKey, $secretKeyNonce);
     },
     ImageUploadInterface::class => get($filesystem[env('FILE_SYSTEM_DRIVER', 'local')]['driver'])
 ]);

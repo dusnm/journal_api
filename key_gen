@@ -1,17 +1,23 @@
 #!/bin/env php
 
 <?php
-
+/**
+ * Generate cryptographic keys used in the application.
+ *
+ * @author Dusan Mitrovic <dusan@dusanmitrovic.xyz>
+ * @licence https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3
+ */
 define('KEYS_DIRECTORY', __DIR__.'/keys');
 define('PRIVATE_KEY_PATH', __DIR__.'/keys/private.pem');
 define('PUBLIC_KEY_PATH', __DIR__.'/keys/public.pem');
-define('SECRET_KEY_PATH', __DIR__.'/keys/secret_key');
-define('SECRET_KEY_NONCE_PATH', __DIR__.'/keys/secret_key_nonce');
 define('PUBLIC_KEY_CRYPTO_DIGEST_ALGORITHM', 'sha512');
 define('PUBLIC_KEY_CRYPTO_KEY_LENGTH', 4096);
+define('WRITE_ERROR', 'Unable to write to the disk, check permissions.');
 
 /**
  * Generates a public key cryptography key pair in string representation with the provided options.
+ *
+ * @return array public/private keypair
  */
 function generate_public_key_crypto_key_pair(array $options): array
 {
@@ -27,18 +33,24 @@ function generate_public_key_crypto_key_pair(array $options): array
 }
 
 /**
- * Generates pseudorandom bytes to be used as part of a symetric encryption/decrytpion key.
+ * Write the file to the disk
+ *
+ * @param string $path
+ * @param mixed $data
+ *
+ * @throws \Exception
  */
-function generate_secret_key_and_nonce(): array
+function write_to_file(string $path, $data): void
 {
-    return [
-        random_bytes(SODIUM_CRYPTO_SECRETBOX_KEYBYTES),
-        random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES),
-    ];
+    if (file_put_contents($path, $data) === false) {
+        throw new Error(WRITE_ERROR);
+    }
 }
 
 if (!file_exists(KEYS_DIRECTORY)) {
-    mkdir(KEYS_DIRECTORY, 0755);
+    if (!mkdir(KEYS_DIRECTORY, 0755)) {
+        throw new Error(WRITE_ERROR);
+    }
 }
 
 if (!file_exists(PRIVATE_KEY_PATH) && !file_exists(PUBLIC_KEY_PATH)) {
@@ -57,16 +69,11 @@ if (!file_exists(PRIVATE_KEY_PATH) && !file_exists(PUBLIC_KEY_PATH)) {
         'private_key_type' => OPENSSL_KEYTYPE_RSA,
     ]);
 
-    file_put_contents(PUBLIC_KEY_PATH, $public_key);
-    file_put_contents(PRIVATE_KEY_PATH, $private_key);
+    write_to_file(PUBLIC_KEY_PATH, $public_key);
+    write_to_file(PRIVATE_KEY_PATH, $private_key);
 
     // The private key must only be accessible by the owner
-    chmod(PRIVATE_KEY_PATH, 0600);
-}
-
-if (!file_exists(SECRET_KEY_PATH) && !file_exists(SECRET_KEY_NONCE_PATH)) {
-    [$secret_key, $secret_key_nonce] = generate_secret_key_and_nonce();
-
-    file_put_contents(SECRET_KEY_PATH, $secret_key);
-    file_put_contents(SECRET_KEY_NONCE_PATH, $secret_key_nonce);
+    if (!chmod(PRIVATE_KEY_PATH, 0600)) {
+        throw new Error(WRITE_ERROR);
+    }
 }
