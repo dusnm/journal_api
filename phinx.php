@@ -8,8 +8,8 @@ require_once __DIR__.'/vendor/autoload.php';
 
 return [
     'paths' => [
-        'migrations' => '%%PHINX_CONFIG_DIR%%/src/db/migrations',
-        'seeds' => '%%PHINX_CONFIG_DIR%%/src/db/seeds',
+        'migrations' => '%%PHINX_CONFIG_DIR%%/src/DB/migrations',
+        'seeds' => '%%PHINX_CONFIG_DIR%%/src/DB/seeds',
     ],
     'environments' => [
         'default_migration_table' => 'phinxlog',

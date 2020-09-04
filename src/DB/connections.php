@@ -12,4 +12,9 @@ return [
         'collation' => 'utf8mb4_unicode_ci',
         'prefix' => '',
     ],
+    'sqlite' => [
+        'driver' => 'sqlite',
+        'database' => __DIR__.'./db.sqlite',
+        'prefix' => '',
+    ],
 ];

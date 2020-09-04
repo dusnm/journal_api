@@ -1,6 +1,7 @@
 <?php
 
 use function App\Helpers\env;
+use function App\DB\bootstrapEloquent;
 use function DI\create;
 use function DI\get;
 use App\Interfaces\ImageUploadInterface;
@@ -14,7 +15,9 @@ use Psr\Container\ContainerInterface;
 $containerBuilder = new ContainerBuilder();
 
 $filesystem = require __DIR__.'/filesystems.php';
-$capsule = require __DIR__.'/../db/capsule.php';
+$connections = require __DIR__.'/../DB/connections.php';
+
+$capsule = bootstrapEloquent($connections[env('DB_DRIVER', 'mysql')]);
 
 $smtpTransport = new Swift_SmtpTransport(env('MAILER_HOST'), env('MAILER_PORT'), env('MAILER_ENCRYPTION'));
 $smtpTransport->setUsername(env('MAILER_USERNAME'));
