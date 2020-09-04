@@ -18,5 +18,6 @@ class S3ImageUploadService implements ImageUploadInterface
     public function upload(UploadedFileInterface $uploadedFile): string
     {
         //TODO: Implement this method
+        return '';
     }
 }
