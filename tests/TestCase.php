@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Bootstraping class for testing
+ *
+ * @author Dusan Mitrovic <dusan@dusanmitrovic.xyz>
+ * @licence https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3
+ */
 namespace App\Tests;
 
 use Dotenv\Dotenv;
@@ -13,22 +18,22 @@ use function APP\DB\bootstrapEloquent;
 
 require __DIR__.'/../src/DB/bootstrapEloquent.php';
 
-class TestCase extends PHPUnitTestCase
+abstract class TestCase extends PHPUnitTestCase
 {
     /**
      * @var PhinxApplication
      */
-    private PhinxApplication $phinx;
+    protected PhinxApplication $phinx;
 
     /**
      * @var array $connections
      */
-    private array $connections;
+    protected array $connections;
 
     /**
      * @var Illuminate\Database\Capsule\Manager
      */
-    private Manager $capsule;
+    protected Manager $capsule;
 
     protected function setUp(): void
     {
