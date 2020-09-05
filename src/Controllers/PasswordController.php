@@ -113,7 +113,7 @@ class PasswordController extends ApiController
             if (!$this->passwordService->resetPassword($resetPasswordDTO)) {
                 $this->log->error('An unknown error has occured.', [
                     'route' => $request->getUri()->getPath(),
-                    'dto' => $resetPasswordDTO,
+                    'email' => $resetPasswordDTO->email,
                 ]);
 
                 return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
@@ -123,14 +123,14 @@ class PasswordController extends ApiController
         } catch (ModelNotFoundException $e) {
             $this->log->error($e->getMessage(), [
                 'route' => $request->getUri()->getPath(),
-                'dto' => $resetPasswordDTO,
+                'email' => $resetPasswordDTO->email,
             ]);
 
             return $this->response($response, ['error' => ErrorMessages::UNAUTHORIZED], HttpStatusCodes::UNAUTHORIZED);
         } catch (Exception $e) {
             $this->log->error($e->getMessage(), [
                 'route' => $request->getUri()->getPath(),
-                'dto' => $resetPasswordDTO,
+                'email' => $resetPasswordDTO->email,
             ]);
 
             return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
