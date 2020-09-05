@@ -3,25 +3,30 @@
 namespace App\Controllers;
 
 use App\DTO\User\RegistrationDTO;
-use function App\Helpers\env;
+use App\Exceptions\UserAlreadyExistsException;
+use App\Factories\MessageFactory;
 use App\Interfaces\ErrorMessages;
 use App\Interfaces\HttpStatusCodes;
-use App\Models\User;
+use App\Interfaces\MessageFactoryInterface;
 use App\Services\JwtService;
 use App\Services\MailerService;
 use App\Services\RegistrationService;
+use Exception;
 use Illuminate\Database\QueryException;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\Validator;
-use Swift_Message as Message;
+use Swift_TransportException;
+use function App\Helpers\env;
+use function App\Helpers\formatException;
 
 class RegistrationController extends ApiController
 {
     private Validator $validator;
     private RegistrationService $registrationService;
     private MailerService $mailerService;
+    private MessageFactory $messageFactory;
     private JwtService $jwtService;
     private Logger $log;
 
@@ -29,12 +34,14 @@ class RegistrationController extends ApiController
         Validator $validator,
         RegistrationService $registrationService,
         MailerService $mailerService,
+        MessageFactory $messageFactory,
         JwtService $jwtService,
         Logger $log
     ) {
         $this->validator = $validator;
         $this->registrationService = $registrationService;
         $this->mailerService = $mailerService;
+        $this->messageFactory = $messageFactory;
         $this->jwtService = $jwtService;
         $this->log = $log;
     }
@@ -61,45 +68,57 @@ class RegistrationController extends ApiController
             return $this->response($response, $validation->errors()->firstOfAll(), HttpStatusCodes::UNPROCESSABLE_ENTITY);
         }
 
-        $userOrError = $this->registrationService->register($registrationDTO);
-
-        /*
-            If there are no errors while inserting the user into the database the RegistrationService will return an instance of the eloquent User model.
-            However since user email is a unique column in the database the database will throw an exception if the same value is inserted twice.
-            The service returns two types of return values depending on if it can figure out what the exception is or not.
-            If it can, it returns an error assoc array with a friendly error message to the user.
-            If it cannot it'll simply forward the exception to the controller and the controller will return a server error.
-         */
-        if (!($userOrError instanceof User)) {
-            if ($userOrError instanceof QueryException) {
-                $this->log->error($userOrError->getMessage(), [
+        try {
+            $user = $this->registrationService->register($registrationDTO);
+        } catch (UserAlreadyExistsException $e) {
+            return $this->response($response, ['error' => ErrorMessages::DUPLICATE_EMAIL], HttpStatusCodes::UNPROCESSABLE_ENTITY);
+        } catch (QueryException | Exception $e) {
+            $this->log->error($e->getMessage(), array_merge(
+                [
                     'route' => $request->getUri()->getPath(),
-                ]);
+                    'email' => $registrationDTO->email
+                ],
+                formatException($e)
+            ));
 
-                return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
-            }
-
-            return $this->response($response, $userOrError, HttpStatusCodes::UNPROCESSABLE_ENTITY);
+            return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
         }
 
         $verificationToken = $this->jwtService->sign(['email' => $registrationDTO->email], 60 * 10);
 
-        $verificationMessage = (new Message(env('APP_NAME', 'Journal API').' verification email.'))
-            ->setFrom(env('MAILER_USERNAME'))
-            ->setTo($registrationDTO->email)
-            ->setBody('<a href='.env('APP_URL').'/api/user/verify?token='.$verificationToken.'>Click here to verify your account.</a>', 'text/html')
-        ;
+        $verificationMessage = $this->messageFactory->produce(
+            env('APP_NAME', 'Journal API').' verification email.',
+            env('MAILER_USERNAME'),
+            $registrationDTO->email,
+            'text/html',
+            [
+                'message_type' => MessageFactoryInterface::VERIFICATION_MESSAGE,
+                'token' => $verificationToken,
+            ]
+        );
 
-        if (0 === $this->mailerService->send($verificationMessage)) {
-            $this->log->error('Failed to send an email to: '.$registrationDTO->email, [
-                'route' => $request->getUri()->getPath(),
-            ]);
-        } else {
-            $this->log->info('Sent a verification email to: '.$registrationDTO->email, [
-                'route' => $request->getUri()->getPath(),
-            ]);
+        try {
+            if (0 === $this->mailerService->send($verificationMessage)) {
+                $this->log->error('Failed to send an email to: '.$registrationDTO->email, [
+                    'route' => $request->getUri()->getPath(),
+                ]);
+            } else {
+                $this->log->info('Sent a verification email to: '.$registrationDTO->email, [
+                    'route' => $request->getUri()->getPath(),
+                ]);
+            }
+
+            return $this->response($response, $user, HttpStatusCodes::CREATED);
+        } catch (Swift_TransportException | Exception $e) {
+            $this->log->error($e->getMessage(), array_merge(
+                [
+                    'route' => $request->getUri()->getPath(),
+                    'verification_message' => $verificationMessage->getBody(),
+                ],
+                formatException($e)
+            ));
+
+            return $this->response($response, ['error' => ErrorMessages::SERVER_ERROR], HttpStatusCodes::INTERNAL_SERVER_ERROR);
         }
-
-        return $this->response($response, $userOrError, HttpStatusCodes::CREATED);
     }
 }

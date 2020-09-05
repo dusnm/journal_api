@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Exception;
+
 /**
  * Return the value of an environment variable
  *
@@ -51,4 +53,21 @@ function randomString(int $length = 10): string
     }
 
     return $string;
+}
+
+/**
+ * Make it easier to extract valuable information from exceptions
+ *
+ * @param Exception $e
+ *
+ * @return array
+ */
+function formatException(Exception $e): array
+{
+    return [
+        'message' => $e->getMessage(),
+        'stackTrace' => $e->getTrace(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+    ];
 }
