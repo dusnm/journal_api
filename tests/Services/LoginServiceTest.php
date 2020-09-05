@@ -15,7 +15,7 @@ class LoginServiceTest extends TestCase
 {
     public function testHandlePasses()
     {
-        $loginDTO = new LoginDTO($_ENV['TEST_USER_EMAIL'], $_ENV['TEST_USER_PASSWORD']);
+        $loginDTO = new LoginDTO('janedoe@example.com', 'janeiscool');
         $loginService = new LoginService();
 
         $user = $loginService->login($loginDTO);
@@ -23,9 +23,9 @@ class LoginServiceTest extends TestCase
         $this->assertInstanceOf(User::class, $user);
     }
 
-    public function testHandleFails()
+    public function testHandleWrongPassword()
     {
-        $loginDTO = new LoginDTO($_ENV['TEST_USER_EMAIL'], 'wrongpassword');
+        $loginDTO = new LoginDTO('janedoe@example.com', 'wrongpassword');
         $loginService = new LoginService();
 
         $user = $loginService->login($loginDTO);
@@ -47,7 +47,7 @@ class LoginServiceTest extends TestCase
     {
         $this->expectException(UserNotVerifiedException::class);
 
-        $loginDTO = new LoginDTO('unverified@mailinator.com', 'blabla1');
+        $loginDTO = new LoginDTO('michaelstonefist@example.com', 'toreadorsrule');
         $loginService = new LoginService();
 
         $loginService->login($loginDTO);

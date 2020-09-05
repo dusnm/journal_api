@@ -14,7 +14,7 @@ return [
     ],
     'sqlite' => [
         'driver' => 'sqlite',
-        'database' => __DIR__.'./db.sqlite',
+        'database' => __DIR__.'/db.sqlite',
         'prefix' => '',
     ],
 ];

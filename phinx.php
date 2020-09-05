@@ -25,7 +25,7 @@ return [
         ],
         'testing'=> [
             'adapter' => 'sqlite',
-            'name' => './src/db/db',
+            'name' => './src/DB/db',
             'suffix' => '.sqlite',
             'memory' => false,
         ],
