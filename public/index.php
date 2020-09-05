@@ -1,5 +1,6 @@
 <?php
 
+use App\Configuration\ContainerAssembler;
 use App\Handlers\CustomErrorHandler;
 use App\Middleware\CorsMiddleware;
 use DI\Bridge\Slim\Bridge;
@@ -10,10 +11,9 @@ require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/../src/Helpers/helpers.php';
 require      __DIR__.'/../src/DB/bootstrapEloquent.php';
 
-$dotenv = Dotenv::createImmutable(__DIR__.'/../');
-$dotenv->load();
+(Dotenv::createImmutable(__DIR__.'/../'))->load();
 
-$container = require_once __DIR__.'/../src/configuration/dependency_container.php';
+$container = (new ContainerAssembler())->assemble();
 
 $app = Bridge::create($container);
 
