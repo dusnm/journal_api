@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Handles HTTP requests concerning registration functionality
+ *
+ * @author Dusan Mitrovic <dusan@dusanmitrovic.xyz>
+ * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3
+ */
 namespace App\Controllers;
 
 use App\DTO\User\RegistrationDTO;
@@ -7,7 +12,6 @@ use App\Exceptions\UserAlreadyExistsException;
 use App\Factories\MessageFactory;
 use App\Interfaces\ErrorMessages;
 use App\Interfaces\HttpStatusCodes;
-use App\Interfaces\MessageFactoryInterface;
 use App\Services\JwtService;
 use App\Services\MailerService;
 use App\Services\RegistrationService;
@@ -92,7 +96,7 @@ class RegistrationController extends ApiController
             $registrationDTO->email,
             'text/html',
             [
-                'message_type' => MessageFactoryInterface::VERIFICATION_MESSAGE,
+                'message_type' => MessageFactory::VERIFICATION_MESSAGE,
                 'token' => $verificationToken,
             ]
         );

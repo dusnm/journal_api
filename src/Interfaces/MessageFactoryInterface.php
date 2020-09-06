@@ -1,5 +1,7 @@
 <?php
 /**
+ * Contract for classes concerning message creation
+ *
  * @author Dusan Mitrovic <dusan@dusanmitrovic.xyz>
  * @licence https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3
  */
