@@ -1,9 +1,13 @@
 <?php
-
+/**
+ * Handles HTTP requests concerning password functionality
+ *
+ * @author Dusan Mitrovic <dusan@dusanmitrovic.xyz>
+ * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3
+ */
 namespace App\Controllers;
 
 use App\DTO\User\ResetPasswordDTO;
-use function App\Helpers\env;
 use App\Interfaces\ErrorMessages;
 use App\Interfaces\HttpStatusCodes;
 use App\Models\User;
@@ -16,20 +20,29 @@ use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\Validator;
-use Swift_Message;
+use App\Factories\MessageFactory;
+use function App\Helpers\env;
 
 class PasswordController extends ApiController
 {
     private PasswordService $passwordService;
     private MailerService $mailerService;
+    private MessageFactory $messageFactory;
     private JwtService $jwtService;
     private Validator $validator;
     private Logger $log;
 
-    public function __construct(PasswordService $passwordService, MailerService $mailerService, JwtService $jwtService, Validator $validator, Logger $log)
-    {
+    public function __construct(
+        PasswordService $passwordService,
+        MailerService $mailerService,
+        MessageFactory $messageFactory,
+        JwtService $jwtService,
+        Validator $validator,
+        Logger $log
+    ) {
         $this->passwordService = $passwordService;
         $this->mailerService = $mailerService;
+        $this->messageFactory = $messageFactory;
         $this->jwtService = $jwtService;
         $this->validator = $validator;
         $this->log = $log;
@@ -50,16 +63,20 @@ class PasswordController extends ApiController
         try {
             User::query()->where('email', '=', $requestQueryParams['email'])->firstOrFail();
 
-            $token = $this->jwtService->sign(['email' => $requestQueryParams['email']], 60 * 10);
+            $resetToken = $this->jwtService->sign(['email' => $requestQueryParams['email']], 60 * 10);
 
-            $message = (new Swift_Message())
-                ->addFrom(env('MAILER_USERNAME'))
-                ->addTo($requestQueryParams['email'])
-                ->setSubject(env('APP_NAME', 'Journal API').' password reset')
-                ->setBody('<a href="'.env('APP_URL').'/api/user/password-reset?token='.$token.'">To reset your password, click here.</a>', 'text/html')
-            ;
+            $verificationMessage = $this->messageFactory->produce(
+                env('APP_NAME', 'Journal API'. 'password reset.'),
+                env('MAILER_USERNAME'),
+                $requestQueryParams['email'],
+                'text/html',
+                [
+                    'message_type' => MessageFactory::RESET_MESSAGE,
+                    'token' => $resetToken,
+                ]
+            );
 
-            if (0 === $this->mailerService->send($message)) {
+            if (0 === $this->mailerService->send($verificationMessage)) {
                 $this->log->error('Reset email not sent.', [
                     'route' => $request->getUri()->getPath(),
                     'email' => $requestQueryParams['email'],
