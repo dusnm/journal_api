@@ -9,6 +9,8 @@
 * [Database seeding](#database-seeding)
 * [Logging](#logging)
 * [Running the application](#running-the-application)
+* [Running tests](#running-tests)
+* [Licensing](#licensing)
 
 ### Dependency installation
 Dependencies are tracked through composer, to install them run:
