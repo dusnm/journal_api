@@ -1,7 +1,10 @@
 <?php
-
-declare(strict_types = 1);
-
+/**
+ * Login unit test
+ *
+ * @author Dusan Mitrovic <dusan@dusanmitrovic.xyz>
+ * @licence https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3
+ */
 namespace App\Tests\Services;
 
 use App\DTO\User\LoginDTO;
@@ -13,27 +16,27 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LoginServiceTest extends TestCase
 {
-    public function testHandlePasses()
+    public function testPasses()
     {
         $loginDTO = new LoginDTO('janedoe@example.com', 'janeiscool');
         $loginService = new LoginService();
 
         $user = $loginService->login($loginDTO);
 
-        $this->assertInstanceOf(User::class, $user);
+        self::assertInstanceOf(User::class, $user);
     }
 
-    public function testHandleWrongPassword()
+    public function testWrongPassword()
     {
         $loginDTO = new LoginDTO('janedoe@example.com', 'wrongpassword');
         $loginService = new LoginService();
 
         $user = $loginService->login($loginDTO);
 
-        $this->assertNull($user);
+        self::assertNull($user);
     }
 
-    public function testHandleFailsModelNotFoundException()
+    public function testFailsModelNotFoundException()
     {
         $this->expectException(ModelNotFoundException::class);
 
@@ -43,7 +46,7 @@ class LoginServiceTest extends TestCase
         $loginService->login($loginDTO);
     }
 
-    public function testHandleFailsUserNotVerifiedException()
+    public function testFailsUserNotVerifiedException()
     {
         $this->expectException(UserNotVerifiedException::class);
 
